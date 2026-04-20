@@ -16,7 +16,7 @@ export const AgentConfigurationAnnotation = Annotation.Root({
    * The language model used for processing and refining queries.
    * Should be in the form: provider/model-name.
    */
-  queryModel: Annotation<string>,
+  queryModel: Annotation<string>(),
 });
 
 /**
@@ -34,6 +34,6 @@ export function ensureAgentConfiguration(
   const baseConfig = ensureBaseConfiguration(config);
   return {
     ...baseConfig,
-    queryModel: configurable.queryModel || 'openai/gpt-4o',
+    queryModel: configurable.queryModel || 'groq/llama-3.1-8b-instant',
   };
 }

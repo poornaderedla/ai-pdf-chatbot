@@ -17,8 +17,8 @@ export const IndexConfigurationAnnotation = Annotation.Root({
   /**
    * Path to a JSON file containing default documents to index.
    */
-  docsFile: Annotation<string>,
-  useSampleDocs: Annotation<boolean>,
+  docsFile: Annotation<string>(),
+  useSampleDocs: Annotation<boolean>(),
 });
 
 /**

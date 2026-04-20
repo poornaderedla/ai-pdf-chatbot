@@ -17,7 +17,10 @@ export async function makeSupabaseRetriever(
     );
   }
   const embeddings = new OpenAIEmbeddings({
-    model: 'text-embedding-3-small',
+    model: 'openai/text-embedding-3-small',
+    configuration: {
+      baseURL: 'https://openrouter.ai/api/v1',
+    },
   });
   const supabaseClient = createClient(
     process.env.SUPABASE_URL ?? '',
