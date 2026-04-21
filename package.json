@@ -6,18 +6,27 @@
     "author": "Mayo Oshin",
     "license": "MIT",
     "workspaces": [
-      "backend",
-      "frontend"
+        "backend",
+        "frontend"
     ],
     "scripts": {
-      "build": "yarn run turbo:command build",
-      "turbo:command": "yarn turbo",
-      "lint": "yarn run turbo:command lint",
-      "lint:fix": "yarn run turbo:command lint:fix", 
-      "format": "yarn run turbo:command format",
-      "format:check": "yarn run turbo:command format:check"
+        "build": "yarn run turbo:command build",
+        "turbo:command": "yarn turbo",
+        "lint": "yarn run turbo:command lint",
+        "lint:fix": "yarn run turbo:command lint:fix",
+        "format": "yarn run turbo:command format",
+        "format:check": "yarn run turbo:command format:check"
     },
     "devDependencies": {
-      "turbo": "latest"
+        "turbo": "latest"
+    },
+    "dependencies": {
+        "@langchain/community": "^0.3.31",
+        "@langchain/core": "^0.3.59",
+        "@langchain/google-genai": "^0.2.18",
+        "@langchain/groq": "^0.1.3",
+        "@langchain/langgraph": "^0.2.57",
+        "@langchain/openai": "^0.3.17",
+        "langchain": "^0.3.37"
     }
-  }
+}

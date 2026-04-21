@@ -18,6 +18,7 @@ export async function makeSupabaseRetriever(
   }
   const embeddings = new OpenAIEmbeddings({
     model: 'openai/text-embedding-3-small',
+    dimensions: 768,
     configuration: {
       baseURL: 'https://openrouter.ai/api/v1',
     },
