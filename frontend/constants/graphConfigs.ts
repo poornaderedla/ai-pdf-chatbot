@@ -6,7 +6,7 @@ type IndexConfigurables = IndexConfiguration;
 export const retrievalAssistantStreamConfig: StreamConfigurables = {
   queryModel: 'groq/llama-3.1-8b-instant',
   retrieverProvider: 'supabase',
-  k: 5,
+  k: 2,
 };
 
 /**

@@ -17,11 +17,28 @@ export async function processPDF(file: File): Promise<Document[]> {
   try {
     await fs.writeFile(tempFilePath, buffer);
     const loader = new PDFLoader(tempFilePath);
-    const docs = await loader.load();
+    const rawDocs = await loader.load();
+    const docs: Document[] = [];
 
-    // Add filename to metadata for each document
-    docs.forEach((doc) => {
-      doc.metadata.filename = file.name;
+    // Native text splitter chunking (1500 chars with 200 overlap)
+    rawDocs.forEach((doc) => {
+      const text = doc.pageContent;
+      const chunkSize = 1500;
+      const overlap = 200;
+      let i = 0;
+      
+      while (i < text.length) {
+        docs.push(
+          new Document({
+            pageContent: text.slice(i, i + chunkSize),
+            metadata: {
+              ...doc.metadata,
+              filename: file.name
+            }
+          })
+        );
+        i += chunkSize - overlap;
+      }
     });
 
     return docs;

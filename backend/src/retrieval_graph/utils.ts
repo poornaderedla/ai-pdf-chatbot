@@ -23,6 +23,7 @@ export function formatDocs(docs?: Document[]): string {
 export function formatChatHistory(messages: BaseMessage[]): string {
   if (!messages || messages.length === 0) return 'No previous chat history.';
   return messages
+    .slice(-4)
     .map((msg) => {
       const role = msg._getType() === 'human' ? 'User' : 'Assistant';
       return `${role}: ${msg.content}`;

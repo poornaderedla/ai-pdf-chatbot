@@ -2,7 +2,7 @@ import { StateGraph, START, END } from '@langchain/langgraph';
 import { AgentStateAnnotation } from './state.js';
 import { makeRetriever } from '../shared/retrieval.js';
 import { formatDocs, formatChatHistory } from './utils.js';
-import { HumanMessage } from '@langchain/core/messages';
+import { HumanMessage, SystemMessage } from '@langchain/core/messages';
 import { z } from 'zod';
 import { RESPONSE_SYSTEM_PROMPT, ROUTER_SYSTEM_PROMPT, REFORMULATE_SYSTEM_PROMPT } from './prompts.js';
 import { RunnableConfig } from '@langchain/core/runnables';
@@ -52,7 +52,7 @@ async function answerQueryDirectly(
   const model = await loadChatModel(configuration.queryModel);
   const userHumanMessage = new HumanMessage(state.query);
   
-  const messageHistory = [...state.messages, userHumanMessage];
+  const messageHistory = [...state.messages.slice(-4), userHumanMessage];
 
   const response = await model.invoke(messageHistory);
   return { messages: [userHumanMessage, response] };
@@ -108,19 +108,12 @@ async function generateResponse(
   const configuration = ensureAgentConfiguration(config);
   const context = formatDocs(state.documents);
   const model = await loadChatModel(configuration.queryModel);
-  const promptTemplate = RESPONSE_SYSTEM_PROMPT;
 
-  const formattedPrompt = await promptTemplate.invoke({
-    question: state.query,
-    context: context,
-  });
-
+  const systemStr = `You are an expert AI assistant tasked with answering questions strictly based on the following retrieved context. If you don't know the answer or the context lacks it, just explicitly state that you don't know.\n\nContext:\n${context}`;
+  const systemMessage = new SystemMessage(systemStr);
   const userHumanMessage = new HumanMessage(state.query);
 
-  // Create a human message with the formatted prompt that includes context
-  const formattedPromptMessage = new HumanMessage(formattedPrompt.toString());
-
-  const messageHistory = [...state.messages, formattedPromptMessage];
+  const messageHistory = [systemMessage, ...state.messages.slice(-4), userHumanMessage];
 
   // Let MessagesAnnotation handle the message history
   const response = await model.invoke(messageHistory);
