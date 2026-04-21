@@ -1,4 +1,5 @@
 import { Document } from '@langchain/core/documents';
+import { BaseMessage } from '@langchain/core/messages';
 
 export function formatDoc(doc: Document): string {
   const metadata = doc.metadata || {};
@@ -17,4 +18,14 @@ export function formatDocs(docs?: Document[]): string {
   }
   const formatted = docs.map(formatDoc).join('\n');
   return `<documents>\n${formatted}\n</documents>`;
+}
+
+export function formatChatHistory(messages: BaseMessage[]): string {
+  if (!messages || messages.length === 0) return 'No previous chat history.';
+  return messages
+    .map((msg) => {
+      const role = msg._getType() === 'human' ? 'User' : 'Assistant';
+      return `${role}: ${msg.content}`;
+    })
+    .join('\n');
 }

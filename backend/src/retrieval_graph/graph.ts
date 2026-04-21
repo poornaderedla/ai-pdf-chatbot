@@ -1,10 +1,10 @@
 import { StateGraph, START, END } from '@langchain/langgraph';
 import { AgentStateAnnotation } from './state.js';
 import { makeRetriever } from '../shared/retrieval.js';
-import { formatDocs } from './utils.js';
+import { formatDocs, formatChatHistory } from './utils.js';
 import { HumanMessage } from '@langchain/core/messages';
 import { z } from 'zod';
-import { RESPONSE_SYSTEM_PROMPT, ROUTER_SYSTEM_PROMPT } from './prompts.js';
+import { RESPONSE_SYSTEM_PROMPT, ROUTER_SYSTEM_PROMPT, REFORMULATE_SYSTEM_PROMPT } from './prompts.js';
 import { RunnableConfig } from '@langchain/core/runnables';
 import {
   AgentConfigurationAnnotation,
@@ -28,8 +28,10 @@ async function checkQueryType(
   const model = await loadChatModel(configuration.queryModel);
 
   const routingPrompt = ROUTER_SYSTEM_PROMPT;
+  const chatHistory = formatChatHistory(state.messages);
 
   const formattedPrompt = await routingPrompt.invoke({
+    chat_history: chatHistory,
     query: state.query,
   });
 
@@ -49,8 +51,10 @@ async function answerQueryDirectly(
   const configuration = ensureAgentConfiguration(config);
   const model = await loadChatModel(configuration.queryModel);
   const userHumanMessage = new HumanMessage(state.query);
+  
+  const messageHistory = [...state.messages, userHumanMessage];
 
-  const response = await model.invoke([userHumanMessage]);
+  const response = await model.invoke(messageHistory);
   return { messages: [userHumanMessage, response] };
 }
 
@@ -75,8 +79,24 @@ async function retrieveDocuments(
   state: typeof AgentStateAnnotation.State,
   config: RunnableConfig,
 ): Promise<typeof AgentStateAnnotation.Update> {
+  const configuration = ensureAgentConfiguration(config);
   const retriever = await makeRetriever(config);
-  const response = await retriever.invoke(state.query);
+  const chatHistory = formatChatHistory(state.messages);
+  
+  let searchString = state.query;
+  
+  if (chatHistory && chatHistory !== 'No previous chat history.') {
+    const model = await loadChatModel(configuration.queryModel);
+    const reformulatePrompt = REFORMULATE_SYSTEM_PROMPT;
+    const formattedPrompt = await reformulatePrompt.invoke({
+      chat_history: chatHistory,
+      query: state.query,
+    });
+    const response = await model.invoke(formattedPrompt.toString());
+    searchString = response.content as string;
+  }
+  
+  const response = await retriever.invoke(searchString);
 
   return { documents: response };
 }
