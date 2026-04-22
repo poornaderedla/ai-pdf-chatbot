@@ -46,8 +46,8 @@ export default function SignUpPage() {
   return (
     <div className="flex flex-col space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700">
       <div className="flex flex-col space-y-3 text-left">
-        <h1 className="text-4xl font-bold tracking-tight text-white">Create an account</h1>
-        <p className="text-sm text-zinc-400">
+        <h1 className="text-4xl font-bold tracking-tight text-foreground">Create an account</h1>
+        <p className="text-sm text-muted-foreground">
           Enter your details below to create your account.
         </p>
       </div>
@@ -57,30 +57,30 @@ export default function SignUpPage() {
           <div className="grid gap-5">
             <div className="grid grid-cols-2 gap-4">
               <div className="grid gap-2">
-                <Label className="text-zinc-300 font-medium" htmlFor="first-name">First name</Label>
+                <Label className="text-slate-700 font-medium" htmlFor="first-name">First name</Label>
                 <Input
                   id="first-name"
                   name="first-name"
                   placeholder="John"
                   disabled={isLoading}
-                  className="h-11 rounded-lg bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
+                  className="h-11 rounded-lg bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
                   required
                 />
               </div>
               <div className="grid gap-2">
-                <Label className="text-zinc-300 font-medium" htmlFor="last-name">Last name</Label>
+                <Label className="text-slate-700 font-medium" htmlFor="last-name">Last name</Label>
                 <Input
                   id="last-name"
                   name="last-name"
                   placeholder="Doe"
                   disabled={isLoading}
-                  className="h-11 rounded-lg bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
+                  className="h-11 rounded-lg bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
                   required
                 />
               </div>
             </div>
             <div className="grid gap-2">
-              <Label className="text-zinc-300 font-medium" htmlFor="email">Email</Label>
+              <Label className="text-slate-700 font-medium" htmlFor="email">Email</Label>
               <Input
                 id="email"
                 name="email"
@@ -90,18 +90,18 @@ export default function SignUpPage() {
                 autoComplete="email"
                 autoCorrect="off"
                 disabled={isLoading}
-                className="h-11 rounded-lg bg-zinc-900 border-zinc-800 text-white placeholder:text-zinc-500 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
+                className="h-11 rounded-lg bg-white border-slate-200 text-slate-900 placeholder:text-slate-400 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label className="text-zinc-300 font-medium" htmlFor="password">Password</Label>
+              <Label className="text-slate-700 font-medium" htmlFor="password">Password</Label>
               <Input
                 id="password"
                 name="password"
                 type="password"
                 disabled={isLoading}
-                className="h-11 rounded-lg bg-zinc-900 border-zinc-800 text-white focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
+                className="h-11 rounded-lg bg-white border-slate-200 text-slate-900 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 transition-all duration-300"
                 required
               />
             </div>
@@ -122,15 +122,15 @@ export default function SignUpPage() {
         </form>
         <div className="relative my-2">
           <div className="absolute inset-0 flex items-center">
-            <span className="w-full border-t border-zinc-800" />
+            <span className="w-full border-t border-slate-200" />
           </div>
           <div className="relative flex justify-center text-xs uppercase tracking-wider">
-            <span className="bg-black px-4 text-zinc-500">
+            <span className="bg-background px-4 text-slate-500">
               Or continue with
             </span>
           </div>
         </div>
-        <Button variant="outline" type="button" disabled={isLoading} className="h-11 rounded-lg bg-zinc-900/50 border-zinc-800 text-white hover:bg-zinc-800 hover:text-white transition-all hover:scale-[1.02]">
+        <Button variant="outline" type="button" disabled={isLoading} className="h-11 rounded-lg bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-all hover:scale-[1.02]">
           <svg className="mr-3 h-5 w-5" viewBox="0 0 24 24">
             <path
               d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
@@ -153,9 +153,9 @@ export default function SignUpPage() {
           Google
         </Button>
       </div>
-      <p className="px-8 text-center text-sm text-zinc-400">
+      <p className="px-8 text-center text-sm text-slate-500">
         Already have an account?{' '}
-        <Link href="/login" className="font-semibold text-indigo-400 hover:text-indigo-300 hover:underline underline-offset-4 transition-colors">
+        <Link href="/login" className="font-semibold text-indigo-600 hover:text-indigo-500 hover:underline underline-offset-4 transition-colors">
           Sign In
         </Link>
       </p>
