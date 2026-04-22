@@ -57,7 +57,7 @@ export default function Home() {
         }
 
         const thread = await client.createThread({
-          metadata: { user_id: session.user.id }
+          user_id: session.user.id
         });
 
         setThreadId(thread.thread_id);
@@ -84,7 +84,7 @@ export default function Home() {
     setIsLoading(true);
     setMessages([]);
     try {
-      const state = await client.threads.getState(id);
+      const state = await client.getThreadState(id);
       if (state && state.values && state.values.messages) {
         const formatted = state.values.messages.map((m: any) => ({
            role: m.type === 'human' ? 'user' : 'assistant',
