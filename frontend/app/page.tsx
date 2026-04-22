@@ -18,7 +18,13 @@ import {
   RetrieveDocumentsNodeUpdates,
 } from '@/types/graphTypes';
 import { Card, CardContent } from '@/components/ui/card';
+import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { supabase } from "@/utils/supabase/client"
+import { useRouter } from 'next/navigation';
+
 export default function Home() {
+  const router = useRouter();
   const { toast } = useToast(); // Add this hook
   const [messages, setMessages] = useState<
     Array<{
@@ -44,7 +50,15 @@ export default function Home() {
       if (threadId) return;
 
       try {
-        const thread = await client.createThread();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session) {
+          router.push('/login');
+          return;
+        }
+
+        const thread = await client.createThread({
+          metadata: { user_id: session.user.id }
+        });
 
         setThreadId(thread.thread_id);
       } catch (error) {
@@ -64,6 +78,28 @@ export default function Home() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  const handleSelectThread = async (id: string) => {
+    setThreadId(id);
+    setIsLoading(true);
+    setMessages([]);
+    try {
+      const state = await client.threads.getState(id);
+      if (state && state.values && state.values.messages) {
+        const formatted = state.values.messages.map((m: any) => ({
+           role: m.type === 'human' ? 'user' : 'assistant',
+           content: m.content || '',
+        }));
+        const clean = formatted.filter((m: any) => m.content && (m.role === 'user' || m.role === 'assistant'));
+        
+        setMessages(clean);
+      }
+    } catch(err) {
+      console.error(err);
+      toast({ title: 'Error', description: 'Failed to load chat history.', variant: 'destructive' });
+    }
+    setIsLoading(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -267,8 +303,15 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 md:p-24 max-w-5xl mx-auto w-full">
-      {messages.length === 0 ? (
+    <SidebarProvider>
+      <AppSidebar currentThreadId={threadId} onSelectThread={handleSelectThread} />
+      <SidebarInset className="relative flex min-h-screen flex-col items-center p-4 md:p-24 w-full">
+        <header className="absolute top-0 left-0 right-0 flex h-16 shrink-0 items-center gap-2 border-b bg-background px-4">
+          <SidebarTrigger />
+        </header>
+        
+        <div className="w-full max-w-5xl mx-auto mt-12 flex-1 relative flex flex-col">
+        {messages.length === 0 ? (
         <>
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
@@ -295,8 +338,9 @@ export default function Home() {
         </div>
       )}
 
-      <div className="fixed bottom-0 left-0 right-0 p-4 bg-background">
-        <div className="max-w-5xl mx-auto space-y-4">
+      {/* Positioned relatively or absolutely inside the flex column instead of raw fixed to viewport */}
+      <div className="sticky bottom-0 left-0 right-0 p-4 bg-background/80 backdrop-blur-md w-full max-w-5xl mx-auto z-10 pt-8 mt-auto">
+        <div className="w-full space-y-4">
           {files.length > 0 && (
             <div className="grid grid-cols-3 gap-2">
               {files.map((file, index) => (
@@ -362,6 +406,8 @@ export default function Home() {
           </form>
         </div>
       </div>
-    </main>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
